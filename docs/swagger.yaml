@@ -1,0 +1,144 @@
+definitions:
+  exam_feature_model.CreateProductRequest:
+    properties:
+      description:
+        type: string
+      name:
+        maxLength: 255
+        type: string
+      price:
+        type: number
+      sale_price:
+        type: number
+    required:
+    - name
+    - price
+    type: object
+  exam_feature_model.FieldUpdate-float64:
+    properties:
+      present:
+        type: boolean
+      value:
+        format: float64
+        type: number
+    type: object
+  exam_feature_model.FieldUpdate-string:
+    properties:
+      present:
+        type: boolean
+      value:
+        type: string
+    type: object
+  exam_feature_model.Product:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      sale_price:
+        type: number
+      updated_at:
+        type: string
+    type: object
+  exam_feature_model.ProductResponse:
+    properties:
+      data:
+        $ref: '#/definitions/exam_feature_model.Product'
+      error_code:
+        type: string
+      successful:
+        type: boolean
+    type: object
+  exam_feature_model.UpdateProductRequest:
+    properties:
+      description:
+        $ref: '#/definitions/exam_feature_model.FieldUpdate-string'
+      name:
+        maxLength: 255
+        type: string
+      price:
+        type: number
+      sale_price:
+        $ref: '#/definitions/exam_feature_model.FieldUpdate-float64'
+    type: object
+info:
+  contact: {}
+paths:
+  /product:
+    post:
+      consumes:
+      - application/json
+      description: Creates a product with name, price, and optional description/sale_price
+      parameters:
+      - description: Product to create
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/exam_feature_model.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a new product
+      tags:
+      - products
+  /product/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Updates only the fields provided in the request body; description
+        and sale_price can be explicitly set to null to clear them
+      parameters:
+      - description: Product ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Fields to update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/exam_feature_model.UpdateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/exam_feature_model.ProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Partially update a product
+      tags:
+      - products
+swagger: "2.0"
