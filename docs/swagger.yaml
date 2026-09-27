@@ -14,20 +14,24 @@ definitions:
     - name
     - price
     type: object
-  exam_feature_model.FieldUpdate-float64:
+  exam_feature_model.CreateSuccessResponse:
     properties:
-      present:
-        type: boolean
-      value:
-        format: float64
-        type: number
-    type: object
-  exam_feature_model.FieldUpdate-string:
-    properties:
-      present:
-        type: boolean
-      value:
+      data:
+        $ref: '#/definitions/exam_feature_model.Product'
+      error_code:
         type: string
+      successful:
+        example: true
+        type: boolean
+    type: object
+  exam_feature_model.ErrorResponse:
+    properties:
+      error_code:
+        type: string
+      errors: {}
+      successful:
+        example: false
+        type: boolean
     type: object
   exam_feature_model.Product:
     properties:
@@ -46,26 +50,23 @@ definitions:
       updated_at:
         type: string
     type: object
-  exam_feature_model.ProductResponse:
-    properties:
-      data:
-        $ref: '#/definitions/exam_feature_model.Product'
-      error_code:
-        type: string
-      successful:
-        type: boolean
-    type: object
   exam_feature_model.UpdateProductRequest:
     properties:
       description:
-        $ref: '#/definitions/exam_feature_model.FieldUpdate-string'
+        type: string
       name:
         maxLength: 255
         type: string
       price:
         type: number
       sale_price:
-        $ref: '#/definitions/exam_feature_model.FieldUpdate-float64'
+        type: number
+    type: object
+  exam_feature_model.UpdateSuccessResponse:
+    properties:
+      successful:
+        example: true
+        type: boolean
     type: object
 info:
   contact: {}
@@ -86,20 +87,17 @@ paths:
       - application/json
       responses:
         "201":
-          description: Created
+          description: Successful creation
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/exam_feature_model.CreateSuccessResponse'
         "400":
-          description: Bad Request
+          description: BODY_PARSER_ERROR, VALIDATOR_ERROR
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/exam_feature_model.ErrorResponse'
         "500":
-          description: Internal Server Error
+          description: INTERNAL_SERVER_ERROR
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/exam_feature_model.ErrorResponse'
       summary: Create a new product
       tags:
       - products
@@ -107,8 +105,10 @@ paths:
     patch:
       consumes:
       - application/json
-      description: Updates only the fields provided in the request body; description
-        and sale_price can be explicitly set to null to clear them
+      description: |-
+        Partial update — only send fields you want to change.
+        "name" and "price" cannot be cleared, only updated or omitted.
+        "description" and "sale_price" can be omitted (no change), set to null (clear the value), or set to a new value.
       parameters:
       - description: Product ID (UUID)
         in: path
@@ -125,19 +125,18 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Successful update
           schema:
-            $ref: '#/definitions/exam_feature_model.ProductResponse'
+            $ref: '#/definitions/exam_feature_model.UpdateSuccessResponse'
         "400":
-          description: Bad Request
+          description: MISSING_PRODUCT_ID, INVALID_PRODUCT_ID, BODY_PARSER_ERROR,
+            or VALIDATOR_ERROR
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/exam_feature_model.ErrorResponse'
         "500":
-          description: Internal Server Error
+          description: INTERNAL_SERVER_ERROR
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/exam_feature_model.ErrorResponse'
       summary: Partially update a product
       tags:
       - products

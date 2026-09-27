@@ -41,24 +41,21 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created",
+                        "description": "Successful creation",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/exam_feature_model.CreateSuccessResponse"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "BODY_PARSER_ERROR, VALIDATOR_ERROR",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/exam_feature_model.ErrorResponse"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "INTERNAL_SERVER_ERROR",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/exam_feature_model.ErrorResponse"
                         }
                     }
                 }
@@ -66,7 +63,7 @@ const docTemplate = `{
         },
         "/product/{id}": {
             "patch": {
-                "description": "Updates only the fields provided in the request body; description and sale_price can be explicitly set to null to clear them",
+                "description": "Partial update — only send fields you want to change.\n\"name\" and \"price\" cannot be cleared, only updated or omitted.\n\"description\" and \"sale_price\" can be omitted (no change), set to null (clear the value), or set to a new value.",
                 "consumes": [
                     "application/json"
                 ],
@@ -97,23 +94,21 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Successful update",
                         "schema": {
-                            "$ref": "#/definitions/exam_feature_model.ProductResponse"
+                            "$ref": "#/definitions/exam_feature_model.UpdateSuccessResponse"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "MISSING_PRODUCT_ID, INVALID_PRODUCT_ID, BODY_PARSER_ERROR, or VALIDATOR_ERROR",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/exam_feature_model.ErrorResponse"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "INTERNAL_SERVER_ERROR",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/exam_feature_model.ErrorResponse"
                         }
                     }
                 }
@@ -143,26 +138,31 @@ const docTemplate = `{
                 }
             }
         },
-        "exam_feature_model.FieldUpdate-float64": {
+        "exam_feature_model.CreateSuccessResponse": {
             "type": "object",
             "properties": {
-                "present": {
-                    "type": "boolean"
+                "data": {
+                    "$ref": "#/definitions/exam_feature_model.Product"
                 },
-                "value": {
-                    "type": "number",
-                    "format": "float64"
+                "error_code": {
+                    "type": "string"
+                },
+                "successful": {
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },
-        "exam_feature_model.FieldUpdate-string": {
+        "exam_feature_model.ErrorResponse": {
             "type": "object",
             "properties": {
-                "present": {
-                    "type": "boolean"
-                },
-                "value": {
+                "error_code": {
                     "type": "string"
+                },
+                "errors": {},
+                "successful": {
+                    "type": "boolean",
+                    "example": false
                 }
             }
         },
@@ -192,25 +192,11 @@ const docTemplate = `{
                 }
             }
         },
-        "exam_feature_model.ProductResponse": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/exam_feature_model.Product"
-                },
-                "error_code": {
-                    "type": "string"
-                },
-                "successful": {
-                    "type": "boolean"
-                }
-            }
-        },
         "exam_feature_model.UpdateProductRequest": {
             "type": "object",
             "properties": {
                 "description": {
-                    "$ref": "#/definitions/exam_feature_model.FieldUpdate-string"
+                    "type": "string"
                 },
                 "name": {
                     "type": "string",
@@ -220,7 +206,16 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "sale_price": {
-                    "$ref": "#/definitions/exam_feature_model.FieldUpdate-float64"
+                    "type": "number"
+                }
+            }
+        },
+        "exam_feature_model.UpdateSuccessResponse": {
+            "type": "object",
+            "properties": {
+                "successful": {
+                    "type": "boolean",
+                    "example": true
                 }
             }
         }

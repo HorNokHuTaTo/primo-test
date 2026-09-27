@@ -23,12 +23,6 @@ type (
 		CreatedAt   time.Time `gorm:"autoCreateTime" json:"created_at"`
 		UpdatedAt   time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 	}
-
-	ProductResponse struct {
-		Successful bool     `json:"successful"`
-		ErrorCode  string   `json:"error_code,omitempty"`
-		Data       *Product `json:"data,omitempty"`
-	}
 )
 
 // UpdateProduct
@@ -36,12 +30,29 @@ type (
 	UpdateProductRequest struct {
 		Name        *string              `json:"name" validate:"omitempty,max=255"`
 		Description FieldUpdate[string]  `json:"description" validate:"omitempty" swaggertype:"string"`
-		SalePrice   FieldUpdate[float64] `json:"sale_price" validate:"omitempty" swaggertype:"float64"`
+		SalePrice   FieldUpdate[float64] `json:"sale_price" validate:"omitempty" swaggertype:"number"`
 		Price       *float64             `json:"price" validate:"omitempty"`
 	}
 	FieldUpdate[T any] struct {
 		Present bool
 		Value   *T
+	}
+)
+
+// swagger:response ErrorResponse
+type (
+	CreateSuccessResponse struct {
+		Successful bool     `json:"successful" example:"true"`
+		ErrorCode  string   `json:"error_code,omitempty"`
+		Data       *Product `json:"data,omitempty"`
+	}
+	UpdateSuccessResponse struct {
+		Successful bool `json:"successful" example:"true"`
+	}
+	ErrorResponse struct {
+		Successful bool        `json:"successful" example:"false"`
+		ErrorCode  string      `json:"error_code"`
+		Errors     interface{} `json:"errors,omitempty"`
 	}
 )
 

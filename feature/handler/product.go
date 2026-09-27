@@ -14,9 +14,9 @@ import (
 // @Accept json
 // @Produce json
 // @Param request body productmodel.CreateProductRequest true "Product to create"
-// @Success 201 {object} map[string]interface{}
-// @Failure 400 {object} map[string]interface{}
-// @Failure 500 {object} map[string]interface{}
+// @Success 201 {object} productmodel.CreateSuccessResponse "Successful creation"
+// @Failure 400 {object} productmodel.ErrorResponse "BODY_PARSER_ERROR, VALIDATOR_ERROR"
+// @Failure 500 {object} productmodel.ErrorResponse "INTERNAL_SERVER_ERROR"
 // @Router /product [post]
 func (h *ProductHandler) CreateProduct(c *fiber.Ctx) error {
 	ctx := c.UserContext()
@@ -53,15 +53,17 @@ func (h *ProductHandler) CreateProduct(c *fiber.Ctx) error {
 
 // UpdateProduct godoc
 // @Summary Partially update a product
-// @Description Updates only the fields provided in the request body; description and sale_price can be explicitly set to null to clear them
+// @Description Partial update — only send fields you want to change.
+// @Description "name" and "price" cannot be cleared, only updated or omitted.
+// @Description "description" and "sale_price" can be omitted (no change), set to null (clear the value), or set to a new value.
 // @Tags products
 // @Accept json
 // @Produce json
 // @Param id path string true "Product ID (UUID)"
 // @Param request body productmodel.UpdateProductRequest true "Fields to update"
-// @Success 200 {object} productmodel.ProductResponse
-// @Failure 400 {object} map[string]interface{}
-// @Failure 500 {object} map[string]interface{}
+// @Success 200 {object} productmodel.UpdateSuccessResponse "Successful update"
+// @Failure 400 {object} productmodel.ErrorResponse "MISSING_PRODUCT_ID, INVALID_PRODUCT_ID, BODY_PARSER_ERROR, or VALIDATOR_ERROR"
+// @Failure 500 {object} productmodel.ErrorResponse "INTERNAL_SERVER_ERROR"
 // @Router /product/{id} [patch]
 func (h *ProductHandler) UpdateProduct(c *fiber.Ctx) error {
 	ctx := c.UserContext()
