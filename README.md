@@ -11,8 +11,8 @@ A Go + Fiber REST API for managing products, with GORM/PostgreSQL, Swagger docs,
 ## 1. Clone and install dependencies
 
 ```bash
-git clone <your-repo-url>
-cd test
+git clone https://github.com/HorNokHuTaTo/primo-test.git
+cd primo-test
 go mod tidy
 ```
 
